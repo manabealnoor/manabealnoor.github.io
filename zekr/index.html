@@ -3790,7 +3790,7 @@ function azLoop(){ clearInterval(azTick); azTick = setInterval(()=>{ if (documen
 function azPlay(id){
   const A = AZ[id];
   if (azApp()){ try { Android.azkarPlay(A.f, A.t+' · مملكة الذكر'); } catch(_){} setTimeout(azPaint, 400); return; }
-  if (!azAu || azAu._f!==A.f){ try{ azAu && azAu.pause(); }catch(_){} azAu = new Audio('audio/'+A.f+'.mp4'); azAu._f = A.f; azAu.preload='auto';
+  if (!azAu || azAu._f!==A.f){ try{ azAu && azAu.pause(); }catch(_){} azAu = new Audio('audio/'+A.f+'.m4a'); azAu._f = A.f; azAu.preload='auto';
     azAu.addEventListener('ended', azPaint); azAu.addEventListener('loadedmetadata', azPaint); }
   azAu.play().catch(()=>toast('مقدرتش أشغّل الصوت')); setTimeout(azPaint, 200);
 }
@@ -3808,12 +3808,12 @@ async function azAction(b){
   const name = A.t + ' - مملكة الذكر.m4a';
   if (k==='dl'){
     if (azApp() && Android.saveAudio){ const r = Android.saveAudio(A.f, name); if (r==='ok') bubble(b, 'تم الحفظ ✓ في التنزيلات'); else if (r==='err') toast('مقدرتش أحفظ الملف'); return; }
-    const a = document.createElement('a'); a.href = 'audio/'+A.f+'.mp4'; a.download = name; document.body.append(a); a.click(); a.remove(); return; }
+    const a = document.createElement('a'); a.href = 'audio/'+A.f+'.m4a'; a.download = name; document.body.append(a); a.click(); a.remove(); return; }
   if (k==='share'){
     const txt = A.t + ' كاملة بصوت هادئ — اسمع وردد' + SIG(A.t);
     thanks(b); if (window.Android) await new Promise(r=>setTimeout(r,1300));
     if (azApp() && Android.shareAudio){ if (Android.shareAudio(A.f, txt)==='err') toast('مقدرتش أشارك الصوت'); return; }
-    try { const blob = await (await fetch('audio/'+A.f+'.mp4')).blob(), file = new File([blob], name, {type:'audio/mp4'});
+    try { const blob = await (await fetch('audio/'+A.f+'.m4a')).blob(), file = new File([blob], name, {type:'audio/mp4'});
       if (navigator.canShare && navigator.canShare({files:[file]})) return await navigator.share({files:[file], text:txt}); } catch(_){ }
     toast('المشاركة بتشتغل من جوه التطبيق'); return; }
 }

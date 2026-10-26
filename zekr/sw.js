@@ -1,5 +1,5 @@
 /* «مملكة الذكر» على الويب: الصفحة من النت وقت ما يكون فيه نت، والخطوط والصوت والبيانات بتتحفظ أول مرة وتشتغل من غير نت */
-const C = 'zekr-v1';
+const C = 'zekr-v2';
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(K => Promise.all(K.filter(k => k.startsWith('zekr-') && k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {
