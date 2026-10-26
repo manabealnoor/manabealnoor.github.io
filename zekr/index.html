@@ -4093,6 +4093,34 @@ if (h === 'msg') setTimeout(openMsg, 300);
       if (e.target.closest('.go') && INST) { var p = INST; INST = null; close(); p.prompt(); }
     });
   }
+
+  /* الصوت وانت بره الصفحة: الموبايل يعامله زي مشغّل الصوتيات، بإشعار وتحكّم من شاشة القفل */
+  var NAMES = {azkar_morning: 'أذكار الصباح', azkar_evening: 'أذكار المساء', adhan_qatami: 'الأذان'};
+  var LIVE = null;
+  function titleOf(src){ var f = (String(src).split('/').pop() || '').replace(/\.[a-z0-9]+$/i, ''); return NAMES[f] || 'تلاوة'; }
+  if ('mediaSession' in navigator && window.HTMLMediaElement) {
+    var play0 = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function(){
+      var a = this; LIVE = a; window.__zkAudio = a;
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({title: titleOf(a.currentSrc || a.src), artist: 'مملكة الذكر', album: 'مملكة الذكر',
+          artwork: [{src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png'}, {src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png'}]});
+        if (!a.__zk) { a.__zk = 1;
+          a.addEventListener('play', function(){ try { navigator.mediaSession.playbackState = 'playing'; } catch(_){} });
+          a.addEventListener('pause', function(){ try { navigator.mediaSession.playbackState = 'paused'; } catch(_){} });
+          a.addEventListener('timeupdate', function(){ try { if (isFinite(a.duration)) navigator.mediaSession.setPositionState({duration: a.duration, position: Math.min(a.currentTime, a.duration), playbackRate: 1}); } catch(_){} });
+        }
+      } catch(_){}
+      return play0.apply(a, arguments);
+    };
+    var act = function(n, f){ try { navigator.mediaSession.setActionHandler(n, f); } catch(_){} };
+    act('play', function(){ LIVE && LIVE.play(); });
+    act('pause', function(){ LIVE && LIVE.pause(); });
+    act('stop', function(){ if (LIVE) { LIVE.pause(); } });
+    act('seekbackward', function(d){ if (LIVE) LIVE.currentTime = Math.max(0, LIVE.currentTime - ((d && d.seekOffset) || 10)); });
+    act('seekforward', function(d){ if (LIVE) LIVE.currentTime = Math.min(LIVE.duration || 1e9, LIVE.currentTime + ((d && d.seekOffset) || 10)); });
+    act('seekto', function(d){ if (LIVE && d && d.seekTime != null) LIVE.currentTime = d.seekTime; });
+  }
   window.askInstall = ask;
   /* after the welcome screen closes */
   function watchSplash(){
